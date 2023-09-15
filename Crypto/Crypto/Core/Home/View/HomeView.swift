@@ -12,6 +12,8 @@ struct HomeView: View {
 
     @State private var showPortfolio: Bool = false
     
+    @EnvironmentObject private var vm: HomeViewModel
+    
     
     var body: some View {
         ZStack{
@@ -20,6 +22,17 @@ struct HomeView: View {
             
             VStack{
                 homeHeader
+                
+                if !showPortfolio{
+                    alCoinsList
+                    .transition(.move(edge: .leading))
+                }
+                
+                if showPortfolio{
+                    portfolioCoinsList
+                        .transition(.move(edge: .trailing))
+                }
+                
                 Spacer(minLength: 0)
             }
         }
@@ -31,6 +44,7 @@ struct HomeView_Previews: PreviewProvider {
         NavigationStack{
             HomeView()
                 .navigationBarHidden(true)
+                .environmentObject(dev.homeVm)
         }
     }
 }
@@ -64,5 +78,26 @@ extension HomeView{
                 }
         }
         .padding(.horizontal)
+    }
+    
+    
+    private var alCoinsList: some View{
+        List{
+            ForEach(vm.allCoins){coin in
+                CoinRowView(coin: coin, showHoldingsColumn: false)
+                    .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+            }
+        }
+        .listStyle(PlainListStyle())
+    }
+    
+    private var portfolioCoinsList: some View{
+        List{
+            ForEach(vm.portfolioCoins){coin in
+                CoinRowView(coin: coin, showHoldingsColumn: true)
+                    .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+            }
+        }
+        .listStyle(PlainListStyle())
     }
 }
